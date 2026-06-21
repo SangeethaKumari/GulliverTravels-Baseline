@@ -159,12 +159,16 @@ async def transcribe(request: TranscribeRequest, token: str = Depends(verify_tok
             mime_type="audio/webm" # Frontend sends webm
         )
         
-        # Initialize the LiteLLM model with the custom endpoint
-        llm = LiteLlm(
-            model="openai/openai/gpt-oss-20b",
-            api_base=os.getenv("LITELLM_API_BASE", "http://10.0.10.51:8124/v1"),
-            api_key=os.getenv("LITELLM_API_KEY", "sv-openai-api-key")
-        )
+        # Initialize the model: use LiteLLM if configured, otherwise fall back to Gemini
+        if os.getenv("LITELLM_API_BASE"):
+            llm = LiteLlm(
+                model="openai/openai/gpt-oss-20b",
+                api_base=os.getenv("LITELLM_API_BASE"),
+                api_key=os.getenv("LITELLM_API_KEY", "sv-openai-api-key")
+            )
+        else:
+            from google.adk.models import Gemini
+            llm = Gemini()
         
         # Initialize an LlmAgent for transcription
         agent = LlmAgent(name="transcriber", model=llm)
@@ -243,6 +247,52 @@ async def call_add_tool(
         raise HTTPException(status_code=504, detail="MCP server timed out")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Glossary Endpoints ────────────────────────────────
+from . import glossary_orchestrator
+from .glossary_orchestrator import DB_PATH
+from fastapi import BackgroundTasks
+import json
+
+class GenerateRequest(BaseModel):
+    term: Optional[str] = None
+    max_terms: Optional[int] = 50
+
+@app.get("/api/glossary")
+async def get_glossary():
+    if not os.path.exists(DB_PATH):
+        return {"terms": []}
+    with open(DB_PATH, "r") as f:
+        return json.load(f)
+
+@app.get("/api/glossary/status")
+async def get_generation_status():
+    return {
+        "is_generating": glossary_orchestrator.is_generation_active or glossary_orchestrator.current_generating_term is not None,
+        "current_term": glossary_orchestrator.current_generating_term,
+        "logs": glossary_orchestrator.live_logs
+    }
+
+@app.post("/api/glossary/generate")
+async def trigger_generation(payload: GenerateRequest, background_tasks: BackgroundTasks):
+    if payload.term:
+        background_tasks.add_task(glossary_orchestrator.generate_term_glossary, payload.term)
+        return {"status": "started", "message": f"Generation started for term '{payload.term}'"}
+    else:
+        background_tasks.add_task(glossary_orchestrator.generate_all_glossary_terms, payload.max_terms)
+        return {"status": "started", "message": f"Bulk generation started for up to {payload.max_terms} terms"}
+
+@app.get("/api/glossary/{term}")
+async def get_glossary_term(term: str):
+    if not os.path.exists(DB_PATH):
+        raise HTTPException(status_code=404, detail="Glossary database not found")
+    with open(DB_PATH, "r") as f:
+        db = json.load(f)
+    for entry in db.get("terms", []):
+        if entry["term"].lower() == term.lower():
+            return entry
+    raise HTTPException(status_code=404, detail=f"Term '{term}' not found")
 
 # ── Entry Point ───────────────────────────────────────
 if __name__ == "__main__":
