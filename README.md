@@ -1,6 +1,6 @@
-# GulliverTravels
+# GlossarySystem
 
-GulliverTravels is an AI-powered assistant designed to help travelers plan their trips, choose the right gear, and maintain their bikes. The project uses the Google Agent Development Kit (ADK) for agentic logic and Model Context Protocol (MCP) for tool integration.
+This system is designed to help users learn about AI terms by using a two-agent architecture. One agent (Agent 2) manages a list of terms, while the other (Agent 1) generates and refines definitions for those terms.
 
 Detailed information about the system flow and components can be found in the [Architecture Document](./ARCHITECTURE.md).
 
