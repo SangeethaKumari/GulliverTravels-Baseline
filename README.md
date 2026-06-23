@@ -1,6 +1,6 @@
 # GlossarySystem
 
-This system is designed to help users learn about AI terms by using a two-agent architecture. One agent (Agent 2) manages a list of terms, while the other (Agent 1) generates and refines definitions for those terms.
+This system is designed to help users learn about AI terms by using a two-agent architecture. One agent (Agent 1) manages a list of terms, while the other (Agent 2) generates and refines definitions for those terms.
 
 Detailed information about the system flow and components can be found in the [Architecture Document](./ARCHITECTURE.md).
 

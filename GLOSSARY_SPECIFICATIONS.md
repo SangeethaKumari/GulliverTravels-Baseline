@@ -2,6 +2,25 @@
 
 This document outlines the detailed model configurations, system instructions, dynamic prompts, and evaluation metrics that power the two-agent Worker-Evaluator loops.
 
+1. The Worker-Evaluator (Generator-Critic) Pattern
+This is the primary pattern powering the Glossary Generation Engine (implemented in glossary_orchestrator.py, glossary_worker.py, and glossary_evaluator.py).
+
+What it is: A multi-agent pattern where one agent (the Generator/Worker) produces a draft response, and another agent (the Evaluator/Critic) provides a structured critique and numerical score. The Generator uses this feedback to refine its response in an iterative loop.
+How it is used here:
+Worker Agent: Generates/revises a Wikipedia-style draft structured into XML sections.
+Evaluator Agent: Critiques the draft on a 0-100 scale using 7 specific dimensions and returns actionable suggestions in structured JSON.
+Orchestrator: Manages the state machine, running the loop for up to 4 iterations or until the Evaluator's score hits $\ge$ 95/100.
+Why it's used: It guarantees high-quality, structured output by separating the cognitive load of content creation from editorial evaluation.
+
+
+2. The Stateful Session Pattern
+What it is: A state management pattern where conversation context is maintained across multiple interactions using unique session identifiers, enabling multi-turn conversations and persistent data.
+How it is used here:
+Orchestrator: Generates a unique session_id for each glossary run (e.g., worker_vector_embeddings_it1) to isolate conversations.
+InMemoryRunner: Uses session_id tags to store and retrieve conversation history, ensuring Agent 1's revisions don't get confused with previous glossary terms.
+User Experience: Allows users to have multi-turn conversations with the Assistant and resume sessions later without losing context.
+Why it's used: Essential for multi-turn dialogues and ensuring that each glossary term has its own isolated conversation context, preventing history leakage between terms.
+
 ---
 
 ## 🤖 Model Implementations
