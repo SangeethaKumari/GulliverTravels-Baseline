@@ -14,6 +14,7 @@ By default, both agents are configured to run on Google's state-of-the-art **Gem
 
 ---
 
+
 ## 📝 Agent 1 (Worker): Prompts & Instructions
 
 ### 1. System Instruction (Persona & Constraints)
