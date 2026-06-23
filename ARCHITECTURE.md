@@ -19,6 +19,7 @@ graph TD
     B -->|JSON Response| A
 ```
 
+
 ---
 
 ## 📂 Core Components
