@@ -299,11 +299,12 @@ if __name__ == "__main__":
     import uvicorn
 
     ENV = os.getenv("APP_ENV", "dev")
+    port = int(os.getenv("PORT", "8000"))
 
     if ENV == "dev":
         logger.info("🔧 Running in DEV mode — hot reload enabled")
         # Note: using "travelagent.main:app" because of the package structure
-        uvicorn.run("travelagent.main:app", host="0.0.0.0", port=8000, reload=True, workers=1, log_level="debug")
+        uvicorn.run("travelagent.main:app", host="0.0.0.0", port=port, reload=True, workers=1, log_level="debug")
     else:
         logger.info("🚀 Running in PROD mode")
-        uvicorn.run("travelagent.main:app", host="0.0.0.0", port=8000, reload=False, workers=4, log_level="warning")
+        uvicorn.run("travelagent.main:app", host="0.0.0.0", port=port, reload=False, workers=4, log_level="warning")

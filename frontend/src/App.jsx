@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+
 export default function App() {
   const [terms, setTerms] = useState([])
   const [selectedTermName, setSelectedTermName] = useState("")
@@ -13,7 +15,7 @@ export default function App() {
   // 1. Fetch Glossary data
   const fetchGlossary = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/glossary")
+      const res = await fetch(`${API_BASE}/api/glossary`)
       const data = await res.json()
       if (data && data.terms) {
         setTerms(data.terms)
@@ -35,7 +37,7 @@ export default function App() {
   // 2. Fetch Generation Status & Logs
   const fetchStatus = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/glossary/status")
+      const res = await fetch(`${API_BASE}/api/glossary/status`)
       const data = await res.json()
       setStatus(data)
     } catch (err) {
@@ -80,7 +82,7 @@ export default function App() {
   const generateSelectedTerm = async () => {
     if (!selectedTermName) return
     try {
-      await fetch("http://localhost:8000/api/glossary/generate", {
+      await fetch(`${API_BASE}/api/glossary/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ term: selectedTermName }),
@@ -94,7 +96,7 @@ export default function App() {
   // Trigger bulk generation
   const generateAllTerms = async () => {
     try {
-      await fetch("http://localhost:8000/api/glossary/generate", {
+      await fetch(`${API_BASE}/api/glossary/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ max_terms: 50 }),

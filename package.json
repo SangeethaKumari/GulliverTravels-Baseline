@@ -1,0 +1,24 @@
+{
+  "name": "gullivertravels-baseline",
+  "version": "1.0.0",
+  "description": "This system is designed to help users learn about AI terms by using a two-agent architecture. One agent (Agent 1) manages a list of terms, while the other (Agent 2) generates and refines definitions for those terms.",
+  "main": "homestead_full.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SangeethaKumari/GulliverTravels-Baseline.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SangeethaKumari/GulliverTravels-Baseline/issues"
+  },
+  "homepage": "https://github.com/SangeethaKumari/GulliverTravels-Baseline#readme",
+  "dependencies": {
+    "docx": "^9.7.1"
+  }
+}
